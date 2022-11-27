@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  	<style>
+		body {
+			margin: 0px;
+			background-color: #000000;
+			overflow: hidden;
+		}
+	</style>
+       <script src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/109/three.min.js"></script>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<style>
+		body, #container {
+			overflow: hidden;
+		}
+	</style>
+</head>
+<body>
+	<div id="container"></div>
+	<script id="vertexShader" type="x-shader/x-vertex">
+	uniform highp float time;
+        
+		mat4 scale = mat4(.9,0.0,0.0,.0,0.1,0.01,0.0,0.0,1.0,0.1,1.0,0.0,0.3,0.6,0.0,.3);
+
+		
+		void main() {
+		   
+            float displacementHeight = .8;
+            float displacementY = sin(time + (position.x) * 3.) * dot(displacementHeight,sin(time)*2.0*tan(time)*0.4);
+	
+            vec4 modifiedPosition = vec4(position,2.0);
+	        modifiedPosition.y += displacementY;
+	        gl_Position = modifiedPosition * scale ;                
+		}
+	</script>
+	<script id="fragmentShader" type="x-shader/x-fragment">
+		//============================================================
+		//PUT YOUR GLSL CODE HERE
+		//============================================================
+
+        precision mediump float;
+        
+        uniform vec2 resolution;
+        uniform vec2 mouse;
+        uniform highp float time;
+        
+        void main(){
+            
+	        vec2 norm_res = vec2(gl_FragCoord.xy / resolution);
+		
+            gl_FragColor = vec4(norm_res.x,norm_res.y,3.5,4.5);
+        }
+		//============================================================
+		//END OF GLSL CODE
+		//============================================================
+	</script>
+	<script>
+		//change the resolution here. 1 is highest
+		var pixel_resolution = 2;
+		var container, stats;
+		var camera, scene, renderer;
+		var uniforms;
+		init();
+		animate();
+		function init() {
+			camera = new THREE.Camera();
+			camera.position.z = 1.0;
+			scene = new THREE.Scene();
+			var geometry = new THREE.PlaneBufferGeometry(5,2,10,10);//size x, size y, dim x, dim y 
+			uniforms = { time: { type: 'f', value: 1.0 }, resolution: { type: 'v2', value: new THREE.Vector2() }, mouse: {type: "v2", value: new THREE.Vector2()}};
+			var material = new THREE.ShaderMaterial({ uniforms: uniforms, vertexShader: document.getElementById('vertexShader').textContent, fragmentShader: document.getElementById('fragmentShader').textContent });
+			var mesh = new THREE.Mesh(geometry, material);
+			scene.add(mesh);
+			renderer = new THREE.WebGLRenderer();
+			//Hack here to change resolution 
+			renderer.setPixelRatio(window.devicePixelRatio / pixel_resolution);
+			document.body.appendChild(renderer.domElement);
+			onWindowResize();
+			window.addEventListener('resize', onWindowResize, false);
+	        window.addEventListener('mousemove', onMouseMove, false);
+
+		}
+		function onWindowResize(event) {
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			uniforms.resolution.value.x = renderer.domElement.width;
+			uniforms.resolution.value.y = renderer.domElement.height;
+
+		}
+		function animate() {
+			requestAnimationFrame(animate);
+			render();
+		}
+		function onMouseMove( event ) {
+        	uniforms.mouse.value.x = 2 * ( event.clientX / window.innerWidth );
+ 	        uniforms.mouse.value.y = 2 * ( 1-(event.clientY) / window.innerHeight
+ 	        );
+        }
+		function render() {
+			uniforms.time.value += 0.01;
+			renderer.render(scene, camera);
+		}
+	</script>
+
+          <script  language="javascript" type="text/javascript">
+            function save(blob, filename) {
+              const link = document.createElement('a')
+              link.style.display = 'block'
+              document.body.appendChild(link)
+
+              console.log(blob)
+
+              link.href = URL.createObjectURL(blob)
+              link.download = filename
+              link.click()
+
+            }
+            function saveString(text, filename) {
+              save(new Blob([text], { type: 'text/plain' }), filename)
+            }
+
+            function exportGLTF() {
+              const exporter = new GLTFExporter()
+              const params = {
+                trs: false,
+                onlyVisible: true,
+                truncateDrawRange: true,
+                binary: false,
+                maxTextureSize: 4096,
+              }
+
+              exporter.parse(
+                scene,
+                // called when the gltf has been generated
+                function (gltf) {
+                  const output = JSON.stringify(gltf, null, 2)
+                  console.log(output)
+                  saveString(output, 'scene.gltf')
+                },
+                // called when there is an error in the generation
+                function (error) {
+                  console.log('An error happened')
+                },
+                params
+              )
+            }
+            exportGLTF()
+          </script>
+        </body>
+</html>
