@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src = "https://mimicproject.com/libs/nexusUI.js"></script>
+ <script src = "https://mimicproject.com/libs/maximilian.v.0.1.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Staatliches" rel="stylesheet"/>  
+ <link rel="stylesheet" href="https://mimicproject.com/libs/maximilian-example.css" /> 
+   <div>
+    <div id="title"> Homework Week 1 - Getting started 
+      Seed</div>
+    
+     // thank you for providing the code to start off 
+      <div> Many thanks to MAXIMILIAN.JS for the code </div>
+  <div><button id="playButton">Play</button></div>
+</div>
+<div id="oscilloscope"></div>
+<div id="spectrogram"></div>
+</head>   
+<body>
+  
+  <!-- Maximilian code goes here -->
+  <script id = "myAudioScript">
+    var osc1 = new Maximilian.maxiOsc();
+    var osc2 = new Maximilian.maxiOsc();
+    
+    // Adding 2 more osclators. 
+    // Osc3 & Osc4 are part ofthe homework requirements, while osc5 is added as a frequency modulator to the wave. 
+    var osc3 = new Maximilian.maxiOsc();
+    var osc4 = new Maximilian.maxiOsc();
+    var osc5 = new Maximilian.maxiOsc();
+    
+    
+    // trying to keep the frequency low throug the modulator. 
+    function play() {
+   	 return (osc1.saw(10) * osc2.saw(10.1) + osc3.saw(20) * osc4.saw(20.1)) * osc5.saw(0.06)
+   
+    }
+    
+    
+    
+    // tried also to play a bit... chekc this out, but lower volume before
+    
+      // function play() {
+     // return ((osc1.saw(10) * osc2.saw(10.1)) / (osc3.saw(20) * osc4.saw(20.1))) * osc5.saw(0.06)
+   
+ //   }
+    
+  </script>
+  
+ <!-- Main Javascript code goes here --> 
+  <script language="javascript">
+    let maxi;
+    initAudioEngine().then((dspEngine)=>{ 
+      maxi = dspEngine;
+      setup();
+      //Get audio code from script element
+      maxi.setAudioCode("myAudioScript");
+    })
+    
+    ///////YOU CAN IGNORE ME - CODE FOR SCOPES///////
+    let setup = ()=> {
+      maxi.hush()
+      Nexus.context = maxi.audioWorkletNode.context;
+      new Nexus.Oscilloscope('oscilloscope', {'size': [400,100]}).connect(maxi.audioWorkletNode);
+      new Nexus.Spectrogram('spectrogram', {'size': [400,100]}).connect(maxi.audioWorkletNode);
+      const playButton = document.getElementById('playButton');   
+      let playAudio = () => {
+        playButton.innerHTML  = maxi.play() ? "STOP":"PLAY"
+      }
+      playButton.addEventListener("click", () => playAudio());
+    }
+    ///////////////////////////////////////////////
+  </script>
+</body>
+</html>
