@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+ <script src = "https://mimicproject.com/libs/maximilian.js"></script>
+ <link href="https://fonts.googleapis.com/css?family=Staatliches" rel="stylesheet">  
+ <script src = "https://rawgit.com/nexus-js/ui/master/dist/NexusUI.js"></script>
+  <link rel="stylesheet" href="styleCSS" />
+</head>
+<body>   <body><canvas id = "mycanvas" width="200" height="200"> </canvas>
+  <div>
+    <div id="title">Week 2 Homework</div>
+    <div id="subtitle">Thanks for the code </div>
+  <div><button id="playButton">Play</button></div>
+  <div><button id="stopButton" style="display:none">Stop</button></div>
+</div>
+<div id="oscilloscope"></div>
+<div id="spectrogram"></div>
+
+<script language="javascript" type="text/javascript">
+  
+	const playButton = document.getElementById('playButton');
+
+  //create a maximilian object
+  	var maxi = maximilian();
+
+  //create an audio engine
+	var maxiEngine = new maxi.maxiAudio();
+	
+	//create a bunch of stuff
+    var sound1 = new maxi.maxiSample();
+    var kick = new maxi.maxiSample();
+    var basis = new maxi.maxiSample();
+    var myOsc = new maxi.maxiOsc();
+    var myOsc2 = new maxi.maxiOsc();
+    var myClock = new maxi.maxiClock();
+  
+   //var kickCount = 9;
+  
+  	var scratch=0;
+    var counter = 0;
+    //var myTempo = 200;
+   // var delayTime = myTempo * 3;
+    myClock.setTempo(70);
+    myClock.setTicksPerBeat(2);
+  	var oscilloscope,spectrogram;
+	
+
+	let playAudio = () => {
+	  playButton.style.display="none";
+	  //initiating the audio engine. 
+	  maxiEngine.init();
+	  //the samples are from https://freesound.org/people/schafferdavid/sounds/211471/
+  	maxiEngine.loadSample("258021__soundscape-humfak__leaves.wav", sound1);
+  	maxiEngine.loadSample("659627__josefpres__piano-loops-036-octave-down-long-loop-120-bpm.wav", kick);
+  	maxiEngine.loadSample("659628__garuda1982__acoustic-guitar-melody-fingerstyle-9.mp3", basis);
+
+      
+	  //show an oscilloscope and freqscope - copied this entirely from existing code. 
+    Nexus.context = maxiEngine.context;
+	  oscilloscope = new Nexus.Oscilloscope('oscilloscope', {'size': [400,100]}).connect(maxiEngine.maxiAudioProcessor);
+    spectrogram = new Nexus.Spectrogram('spectrogram', {'size': [400,100]}).connect(maxiEngine.maxiAudioProcessor);
+
+		maxiEngine.play = function() {
+          
+      myClock.ticker();
+        
+        if (myClock.tick) {
+            
+            scratch=0;
+            counter++;
+        }
+
+        if (myClock.tick && counter%8===2) {
+            kick.trigger();            
+        }
+        if (myClock.tick && counter%16===2) {
+            kick.trigger();            
+        }
+
+
+        if (myClock.tick && counter%8==4) {
+                
+            sound1.trigger();
+                      
+        }
+
+        if (myClock.tick && counter%16==7) {
+            basis.trigger();            
+        }
+        // played with the numbers to abjust the rythem. 
+       var out = kick.playOnce() + sound1.playOnce() + basis.play(2) + myOsc.sinebuf(2);      	
+       return out * 0.2;
+     //  return (out + myDelay.dl(out,delayTime,feedback)) * 0.0;
+		
+        }
+	}
+
+ 
+	playButton.addEventListener("click", () => playAudio());
+
+
+	
+
+</script>
+</body>
+</html>
+
+
+
+
+
+CSS STyles 
+
+
+#inner-container {
+  background-color: #40FFFF;
+  width:900px;
+  padding:100px;
+  position:absolute;
+}
+
+#main-container {
+  background-color: #40ffff;
+  width:auto;
+  height:100px;
+}
+
+body {
+  font-family: 'Staatliches';
+  font-size: 50px;
+  color: pink;
+  text-align: left;
+}
+
+#subtitle {
+  font-size: 60%;
+  
+}
+
+button {
+  background-color: pink;
+  color: black;
+  border:solid black 4px;
+  width:150px;
+  padding:10px;
+  margin:10px;
+  font-family: 'Staatliches';
+    font-size: 25px;
+}
+
+button:hover {
+  background-color: transparent;
+  color:#FFff10;
+  border:solid #FFD12C 5px;
+}
+
+
