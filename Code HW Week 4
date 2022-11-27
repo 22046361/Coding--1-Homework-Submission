@@ -1,0 +1,124 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="myCanvas" width="400" height="400" style="border:1px solid #c3c3c3;" ></canvas>
+    <canvas id="myCanvas2" width="400" height="400" style="border:1px solid #c3c3c3;"></canvas>
+    
+       
+    <script>
+      
+
+  var can = document.querySelector('canvas');
+  can.style.position = 'absolute';
+  can.style.top = "400px";
+  can.style.left = "0px";   
+      
+      
+
+        var mouseX = 1;
+        var mouseY = 1;
+        var imageObj = new Image();
+        imageObj.src =("pic.jpg");
+
+        var canvas = document.getElementById('myCanvas');
+        var canvas2 = document.getElementById('myCanvas2');
+       // canvas.addEventListener('mousemove', getMouse, false);
+
+        var context = canvas.getContext('2d');
+        var context2 = canvas2.getContext('2d');
+        var imageWidth = imageObj.height;
+        var imageHeight = imageObj.width;
+
+        context2.drawImage(imageObj, 0, 0);
+
+        var imageData = context2.getImageData(0, 0, imageWidth, imageHeight);
+        var data = imageData.data;
+        var imageData2 = context.getImageData(0, 0, imageWidth, imageHeight);
+       
+      
+    var kernel = [[1/9, 1/9, 1/9],
+                  [1/9, 1/9, 1/9],
+                  [1/9, 1/9, 1/9]];
+      
+      var Size = 3; 
+      
+    //  imageObj.onload = function draw() {
+       var draw = function()   {
+       //analysing the pixels on the page 
+           for(var i = 0; i < imageHeight; i++) {
+   
+            for(var j = 0; j < imageWidth; j++) {
+           
+            // the value of the pixel. 
+           if(j-1 > 0 && i-1>0 && j+1 <imageWidth && i+1 < imageHeight){
+             var red = 0;
+             var green= 0;
+             var blue =0;
+             var alpha = 0;
+           
+             //going through the kernel
+             // it is defined as it relates to the 'size' below - the K &L are defined in the this for loop. 
+               for (var k=0; k <size; k++){
+               for (var l = 0; l < size; l++){
+               red += data [((imageWidth *i + (l -1)) + j + (k-1)) *4] *   kernel[k][1];
+               green += data [((imageWidth *i + (l -1)) + j + (k-1)) *4] * kernel[k][1];
+               blue += data [((imageWidth *i + (l -1)) + j + (k-1)) *4] *  kernel[k][1];
+               alpha += data [((imageWidth *i + (l -1)) + j + (k-1)) *4] * kernel[k][1];
+            
+                }
+            
+             }            
+  //    imageData2.data[((imageWidth * i) + j) *4 ] = red;
+ //     imageData2.data[((imageWidth *i) + j) *4  + 1 ] = green;
+  //    imageData2.data[((imageWidth *i) + j) *4  + 2 ] = blue;
+ //     imageData2.data[((imageWidth *i) + j) *4  + 3 ] = alpha;
+  //           }
+ //        }
+      
+  
+      //   if (data[((imageWidth * i) + j) * 4] > mouseX) {
+            
+        //    imageData2.data[((imageWidth * i) + j) * 4] = data[((imageWidth * i) + j) * 4];
+       //     imageData2.data[((imageWidth * i) + j) * 4+1] = data[((imageWidth * i) + j) * 4 + 1];
+       //     imageData2.data[((imageWidth * i) + j) * 4+2] = data[((imageWidth * i) + j) * 4 + 2];
+       //     imageData2.data[((imageWidth * i) + j) * 4+3] = data[((imageWidth * i) + j) * 4 + 3];
+            
+                
+         //   }
+         //   else {
+                
+          imageData2.data[((imageWidth * i) + j) * 4] = red;
+          imageData2.data[((imageWidth * i) + j) * 4+1] = green;
+          imageData2.data[((imageWidth * i) + j) * 4+2] = blue;
+          imageData2.data[((imageWidth * i) + j) * 4+3] = 255;
+                
+                
+           }
+         
+       }
+    
+        context.putImageData(imageData2,0,0);
+		requestAnimationFrame(draw);
+      }
+ 
+ 
+      
+		requestAnimationFrame(draw);
+ 
+    //      function getMouse(mousePosition) {
+    //            mouseX = mousePosition.layerX;
+   //             mouseY = mousePosition.layerY;
+    //    }     
+
+   
+    </script>
+  </body>
+</html>    
