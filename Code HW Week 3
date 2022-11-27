@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+<body style="background-color:black;">
+
+  <h1 id="this-header"> Homework Week 3 </h1>
+
+  <canvas></canvas>
+
+  <script type="text/javascript">
+    let header1 = document.getElementById("this-header");
+    header1.style.color = "yellow";
+    // This is where we are going to store the mouse information
+    var mouseX = 0;
+    var mouseY = 0;
+    // We really need this
+    var TWO_PI = Math.PI * 2;
+
+    // This gets a reference to the canvas in the browser
+
+    var canvas = document.querySelector("canvas");
+
+    // This sets the width and height to the document window
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    // Be aware that when you resize the window, you will need to call (do) this again
+
+    // Creating the context for the canvas.
+    var context = canvas.getContext("2d");
+
+    // adding the rotate function to manipulate the shape.
+
+    context.rotate(45 * Math.PI / 180);
+    //making the mouse interactive.
+    canvas.addEventListener('mousemove', getMouse, false);
+
+    function getMouse(mousePosition) {
+      mouseX = mousePosition.layerX;
+      mouseY = mousePosition.layerY;
+    }
+
+
+    // This function translates the canvas so that we're looking at it from a different position, meaning that 0,0 is somewhere else
+    function draw_one() {
+
+      var segments = 200;
+      var spacing = TWO_PI / segments;
+      var radius = 200;
+
+     //clear the screen
+      	context.clearRect(0,0, canvas.width, canvas.height);
+
+      //Drawing first shape.
+
+      context.beginPath();
+
+      for (var i = 0; i < segments; i++) {
+
+        context.strokeStyle = "FF3010"; //set the line colour to black
+        var x = 550 + Math.cos(spacing / 2 * i * (mouseX / 50)) * Math.cos(spacing * i * (mouseY / 50)) * radius;
+        var y = Math.sin(spacing / 2 * i * (mouseX / 50)) * Math.sin(spacing * i * (mouseY / 50)) * radius;
+
+        context.lineTo(x + radius, y + radius);
+
+      }
+
+      context.stroke(); //draw the outline
+      context.closePath();
+      requestAnimationFrame(draw_one);
+
+    }
+
+    //Drawing second shape.
+    function draw_two() {
+
+      var segments1 = 1000;
+      var spacing1 = TWO_PI / segments1;
+      var radius1 = 400;
+
+      context.beginPath();
+
+      for (var i1 = 0; i1 < segments1; i1++) {
+
+        context.strokeStyle = "#FF5090"; //set the line colour to black
+        var x1 = Math.cos(spacing1 * i1 * (mouseX / 50)) * Math.cos(spacing1 * i1 * (mouseY / 50)) * radius1;
+        var y1 = Math.sin(spacing1 * i1 * (mouseX / 50)) * Math.sin(spacing1 * i1 * (mouseY / 50)) * radius1;
+
+        context.lineTo(x1 + radius1 + 100, y1 + radius1 + 50);
+
+      }
+
+      context.stroke(); //draw the outline
+      context.closePath();
+      requestAnimationFrame(draw_two);
+
+    }
+
+    //Drawing third shape.
+    function draw_three() {
+
+      	 var segments2 = 1000;
+      	 var spacing2 = TWO_PI / segments2;
+      	 var radius2 = 750;
+
+      context.beginPath();
+
+      for (var i2 = 0; i2 < segments2; i2++) {
+
+        context.strokeStyle = "#FFFFFF"; //set the line colour to black
+        var x2 = Math.cos(spacing2 * i2 * (mouseX / 50)) * Math.cos(spacing2 * i2 * (mouseY / 150)) * radius2*2;
+        var y2 = Math.sin(spacing2 * i2 * (mouseX / 50)) * Math.sin(spacing2 * i2 * (mouseY / 50)) * radius2;
+
+        context.lineTo(x2 + radius2, y2 + radius2);
+
+      }
+
+      context.stroke(); //draw the outline
+      context.closePath();
+      requestAnimationFrame(draw_three);
+
+    }
+
+// run the seperate draw functions
+     requestAnimationFrame(draw_one);
+     requestAnimationFrame(draw_two);
+     requestAnimationFrame(draw_three);
+
+  </script>
+</body>
+
+</html>
